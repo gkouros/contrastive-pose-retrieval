@@ -1,0 +1,3 @@
+from .weighted_margin_triplet_loss import WeightedMarginTripletLoss
+from .weighted_margin_contrastive_loss import WeightedMarginContrastiveLoss
+from .dynamic_margin_loss import DynamicMarginLoss
