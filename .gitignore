@@ -1,7 +1,30 @@
+# Specific types
+notebooks/*.csv
+**pkl
+**json
+**.nfs*
+**.csv
+**.gif
+**.png
+**.tiff
+**.jpg
+
+
+# VSCode
+*.code-workspace
+*.vscode*
+
+# vim
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+**logs*/
+*saved_models/
+*tensorboard/
 
 # C extensions
 *.so
