@@ -90,3 +90,6 @@ python3 scripts/generate_pascal3d_renderings.py \
 ```
 To visualize the images use same script as before but add the argument
 "--positive_from_db".
+
+## Download trained models
+You can download trained models from the following [link](https://drive.google.com/drive/folders/1D5MmvqHOtYBv7YiQp8fiMcv53MMxVXb-?usp=sharing) for the different object categories.
