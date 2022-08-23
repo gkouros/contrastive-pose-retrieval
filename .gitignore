@@ -5,7 +5,6 @@ notebooks/*.csv
 **.nfs*
 **.csv
 **.gif
-**.png
 **.tiff
 **.jpg
 trained_models
