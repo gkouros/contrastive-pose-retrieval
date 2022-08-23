@@ -8,7 +8,7 @@ notebooks/*.csv
 **.png
 **.tiff
 **.jpg
-models
+trained_models
 
 
 # VSCode
