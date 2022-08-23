@@ -1,14 +1,16 @@
 # contrastive-pose-retrieval
+
+![media/pose_estimation.png](media/pose_estimation.png)
+
 Code for paper "Category-Level Pose Retrieval with Contrastive Features Learnt with Occlusion Augmentation"
 
-## Contents
-- **scripts**: scripts for training, evaluation, and data visualization.
-- **src**:
-    - **losses**: Contains the custom Weighted Margin loss.
-    - **samplers**: Custom samplers.
-    - **dataloader**: Contains code for data loading, processing, and rendering.
-    - **pipeline**: Utility functions for creating a training pipeline. Example usage in [train.py](scripts/train.py).
-
+The table below presents the expected performance on PASCAL3D (L0) for 12 object categories.
+:
+|   | plane | bike  | boat  | bottle| bus   |   car | chair | table | mbike | sofa  | train | tv    | Mean  |
+|---------------|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| Pi/6          | 84.8 | 88.1  |  82.5 |  91.7 |  98.7 |  99.2 |  95.9 |  88.8 |  85.6 |  97.0 |  98.0 |  90.0 |  92.3 |
+| Pi/18         | 59.5 | 42.8  |  54.2 |  68.7 |  94.5 |  95.9 |  70.4 |  71.8 |  33.9 |  69.9 |  88.7 |  58.7 |  72.2 |
+| MedErr        | 8.2  | 11.6  |   9.4 |   7.1 |   3.0 |   3.1 |   6.7 |   6.3 |  13.5 |  6.5  |  3.9  |   8.4 |  6.6  |
 
 ## Setup conda environment
 
@@ -31,26 +33,23 @@ conda install -c fvcore -c iopath -c conda-forge fvcore iopath
 pip3 install -r /path/to/requirements.txt
 ```
 
-## Download dataset(s)
-Download NeMo for downloading and preparing PASCAL3D+ and OccludedPASCAL3D+.
-This process requires cuda and takes a while to finish. The datasets will be
-in "./NeMo/data/", so move them to your dataset folder for convenience.
-PASCAL3D+_release1.1 is the original PASCAL3D+ dataset, PASCAL3D_train_NeMo
-is the training set, PASCAL3D_NeMo is the test set and PASCAL3D_OCC_NeMo is the occluded testset.
-```shell
-git clone "https://github.com/Angtian/NeMo.git"
-cd NeMo
-chmod +x PrepareData.sh
-./PrepareData.sh
-```
+## Download and generate dataset(s)
 
-Download PASCAL VOC 2012 for synthetic-occlusion data augmentation
+(Needed for training and/or evaluation)
+
+Follow the instructions in the repository of [NeMo](https://github.com/Angtian/NeMo/blob/main/README.md) to download and preprocess PASCAL3D
+
+Follow the instructions in [OccludedPASCAL3D](https://github.com/Angtian/OccludedPASCAL3D) to generate an occluded version of PASCAL3D.
+
+## Download PASCAL VOC 2012 for the synthetic-occlusion data augmentation
 ```shell
 wget "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar"
 tar -xf "VOCtrainval_11-May-2012.tar"
 ```
 
 ## Generate datasets of renderings
+(Needed for training and/or evaluation)
+
 Generate rendering counterparts for train and test splits of PASCAL3D+.
 The script will generate rendering, silhouette, depth, and normal images for the
 train and test splits, located on PASCAL_(train_)NeMo/renderings/. The script
@@ -73,23 +72,45 @@ python3 scripts/visualize_pascal3d.py \
     --positive=normals
 ```
 
-Now generate the large database of 889k renderings for one rendering type
-e.g. normals. This can take over 1-3 days depending on GPU. The images will be
-saved in an hdf5 file to avoid saving almost a million images in a single folder
-thus increasing file access speed.
-```shell
-python3 scripts/generate_pascal3d_renderings.py \
-    --split="db" \
-    --from_scratch="False" \
-    --object_category="car" \
-    --positive_type='normals' \
-    --root_dir="/path/to/datasets" \
-    --downsample_rate="2" \
-    --nouse_fixed_cad_model \
-    --db_name='db'
-```
-To visualize the images use same script as before but add the argument
-"--positive_from_db".
-
 ## Download trained models
-You can download trained models from the following [link](https://drive.google.com/drive/folders/1D5MmvqHOtYBv7YiQp8fiMcv53MMxVXb-?usp=sharing) for the different object categories.
+You can download trained models for the all 12 PASCAL3D object categories from the following [https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing](https://drive.google.com/drive/folders/1D5MmvqHOtYBv7YiQp8fiMcv53MMxVXb-?usp=sharing).
+
+## Download encoded reference sets
+You can download encoded reference sets for all 12 PASCAL3D object categories from the following [https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing](https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing).
+
+## Training
+In order to train on PASCAL3D you need to have followed all the aforementioned steps to download and preprocess PASCAL3D to generate the training and testing sets. Then simply execute the following script:
+```bash
+./scripts/train_pascal3d.sh
+```
+Make sure the provided paths in the script are correct!!!
+
+## Evaluation
+To evaluate a model you trained on PASCAL3D simply execute the following script after making sure the datasets and weights paths are correct:
+```bash
+./scripts/evaluate_occluded_pascal3d.sh
+```
+The evaluation script does not work with the provided trained models because it expects a log file from which it can read the configuration parameters.
+
+## Inference on a single image
+To get an idea how to use the pose estimator take a look at the predict_pose.py script or execute it giiven paths to the image, model weights, and reference embeddings.
+```bash
+python3 scripts/predict_pose.py
+    --image_path=/path/to/query-image
+    --weights_path=/path/to/trained_models/car
+    --refset_path=/path/to/referense-embeddings
+```
+
+
+## Citation
+---
+Please cite the following paper if you find this the code useful for your research/projects.
+
+```
+@article{kouros2022category,
+  title={Category-Level Pose Retrieval with Contrastive Features Learnt with Occlusion Augmentation},
+  author={Kouros, Georgios and Shrivastava, Shubham and Picron, C{\'e}dric and Nagesh, Sushruth and Tuytelaars, Tinne},
+  journal={arXiv preprint arXiv:2208.06195},
+  year={2022}
+}
+```
