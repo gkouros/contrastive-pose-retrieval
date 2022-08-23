@@ -111,8 +111,8 @@ def load_checkpoint(path, trunk, embedder, optimizers, lr_schedulers,
 
 def load_weights(path, trunk, embedder, multimodal=False, device=torch.device('cpu')):
     resume_epoch, suffix = c_f.latest_version(path)
-    trunk_path = f'{path}/trunk_{resume_epoch}.pth'
-    emb_path = f'{path}/embedder_{resume_epoch}.pth'
+    trunk_path = f'{path}/trunk_best{resume_epoch}.pth'
+    emb_path = f'{path}/embedder_best{resume_epoch}.pth'
     trunk_checkpoint = torch.load(trunk_path, map_location=device)
     embedder_checkpoint = torch.load(emb_path, map_location=device)
     trunk.module.load_state_dict(trunk_checkpoint, strict=True)

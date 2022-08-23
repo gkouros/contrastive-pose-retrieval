@@ -96,13 +96,15 @@ def get_trainval_transforms(
 
 
 def get_inference_transforms(output_size=(256, 672)):
-    inference_transforms = transforms.compose(
-        PadResize(output_size),
-        transforms.ToPILImage(),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
+    inference_transforms = transforms.Compose(
+        [
+            PadResize(output_size),
+            transforms.ToPILImage(),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )
+        ]
     )
     return inference_transforms

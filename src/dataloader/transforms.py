@@ -61,19 +61,19 @@ class PadResize(object):
         ho, wo = self.output_size
 
         if h > w:
-            h2, w2 = ho, w * ho // h
-            top, bottom = 0
-            left, right = (wo - w2) // 2
-            right += 1 * ((wo - w2) % 2)
-        else:
-            h2, w2 = ho * wo // w, wo
-            left, right = 0
-            top, bottom = (ho - h2) // 2
+            h2, w2 = ho, int(w * ho / h)
+            left = right = 0
+            top = bottom = (ho - h2) // 2
             bottom += 1 * ((ho - h2) % 2)
+        else:
+            h2, w2 = int(h * wo / w), wo
+            top = bottom = 0
+            left = right = (wo - w2) // 2
+            right += 1 * ((wo - w2) % 2)
 
-        sample = cv2.resize(sample, (h2, w2), interpolation=cv2.INTER_AREA)
+        sample = cv2.resize(sample, (w2, h2), interpolation=cv2.INTER_AREA)
         sample = cv2.copyMakeBorder(sample, top, bottom, left, right,
-                                    borderType=cv2.BORDER_DEFAULT)
+                                    borderType=cv2.BORDER_CONSTANT)
         return sample
 
 

@@ -97,7 +97,7 @@ def qeuler(q, order, epsilon=0, return_degrees=False):
     else:
         raise
 
-    if degrees:
+    if return_degrees:
         x *= 180.0 / pi
         y *= 180.0 / pi
         z *= 180.0 / pi

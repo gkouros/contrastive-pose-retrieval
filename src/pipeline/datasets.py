@@ -43,7 +43,7 @@ def get_pascal3d_train_val_test_datasets(
     occ_path = os.path.join(
         occluders_path, 'occluders_without_%s.npz' % category)
 
-    if not os.path.exists(occ_path):
+    if synthetic_occlusion_scale and not os.path.exists(occ_path):
         create_occluders_file(
             occluders_path=occluders_path,
             save_path=occ_path,
