@@ -384,6 +384,7 @@ class PASCAL3DPlusDataset(torch.utils.data.Dataset):
                     except Exception:
                         logging.warn('No silhouettes are available for '
                                      'flipping x axis of normals')
+                        pass
 
                 # flip the image horizontally
                 positive = positive[:, ::-1]
@@ -673,7 +674,7 @@ class PASCAL3DPlusDataset(torch.utils.data.Dataset):
                         rendering, None, 0, 255, cv2.NORM_MINMAX,
                         dtype=cv2.CV_8U)
                     cv2.imwrite(fpath % ('rendering', 'JPEG'), rendering)
-                if self._positive_type in ['silhouette', 'all']:
+                if self._positive_type in ['silhouette', 'normals', 'all']:
                     silhouette = cv2.normalize(
                         silhouette, None, 0, 255, cv2.NORM_MINMAX,
                         dtype=cv2.CV_8U)
