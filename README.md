@@ -4,8 +4,7 @@
 
 Code for paper "Category-Level Pose Retrieval with Contrastive Features Learnt with Occlusion Augmentation"
 
-The table below presents the expected performance on PASCAL3D (L0) for 12 object categories.
-:
+The table below presents the expected performance on PASCAL3D (L0) for 12 object categories:
 |   | plane | bike  | boat  | bottle| bus   |   car | chair | table | mbike | sofa  | train | tv    | Mean  |
 |---------------|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 | Pi/6          | 84.8 | 88.1  |  82.5 |  91.7 |  98.7 |  99.2 |  95.9 |  88.8 |  85.6 |  97.0 |  98.0 |  90.0 |  92.3 |
