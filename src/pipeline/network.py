@@ -107,3 +107,25 @@ def load_checkpoint(path, trunk, embedder, optimizers, lr_schedulers,
     mining_funcs['tuple_miner'].load_state_dict(chk)
 
     return resume_epoch + 1
+
+
+def load_weights(path, trunk, embedder, multimodal=False, device=torch.device('cpu')):
+    resume_epoch, suffix = c_f.latest_version(path)
+    trunk_path = f'{path}/trunk_{resume_epoch}.pth'
+    emb_path = f'{path}/embedder_{resume_epoch}.pth'
+    trunk_checkpoint = torch.load(trunk_path, map_location=device)
+    embedder_checkpoint = torch.load(emb_path, map_location=device)
+    trunk.module.load_state_dict(trunk_checkpoint, strict=True)
+    embedder.module.load_state_dict(embedder_checkpoint, strict=True)
+    if multimodal:
+        trunk.module.anchor_model.module.linear = c_f.Identity()
+        trunk.module.posneg_model.module.linear = c_f.Identity()
+        embedder.module.anchor_model.module.linear = c_f.Identity()
+        embedder.module.posneg_model.module.linear = c_f.Identity()
+    else:
+        trunk.module.linear = c_f.Identity()
+        embedder.module.linear = c_f.Identity()
+
+    # move models to device
+    trunk.to(device)
+    embedder.to(device)

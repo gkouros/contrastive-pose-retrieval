@@ -1,8 +1,10 @@
 import os
 import numpy as np
 from torchvision import transforms
-from dataloader.transforms import SquarePad, Identity, BBoxNoise
-from dataloader.transforms import SyntheticOcclusion
+from dataloader.transforms import (
+    SquarePad, Identity, BBoxNoise, SyntheticOcclusion, PadResize
+)
+
 
 def get_trainval_transforms(
         output_size=224,
@@ -91,3 +93,16 @@ def get_trainval_transforms(
     )
 
     return (train_transforms, val_transforms)
+
+
+def get_inference_transforms(output_size=(256, 672)):
+    inference_transforms = transforms.compose(
+        PadResize(output_size),
+        transforms.ToPILImage(),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
+    )
+    return inference_transforms
