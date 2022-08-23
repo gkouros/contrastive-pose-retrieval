@@ -42,7 +42,7 @@ python3 train_pascal3d.py \
     --experiment=$EXPERIMENT-$LOSS-$POSITIVE_TYPE-$LABELLING \
     --primary_metric='accuracy_at_10' \
     --pose_positive_threshold=5 \
-    --use_hdf5 \
+    --nouse_hdf5 \
     --nouse_fixed_cad_model \
     --occlusion_scale=0.5 \
     --weight_mode="cad" \

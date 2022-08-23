@@ -28,8 +28,8 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('root_dir',
                     '/esat/topaz/gkouros/datasets/pascal3d',
                     'The path to PASCAL3D')
-flags.DEFINE_string('weights_path', '', 'The path to the trained model weights')
 flags.DEFINE_string('category', 'car', 'The object category to encode for')
+flags.DEFINE_string('weights_path', None, 'The path to the trained model weights')
 
 if __name__ == '__main__':
     # initialize command line arguments
@@ -50,7 +50,7 @@ if __name__ == '__main__':
             use_fixed_cad_model=False,
             device=torch.device('cpu'),
             labelling_method='euler',
-            object_category=FLAGS.category,
+            object_category=FLAGS.category.split('_')[0],
             object_subcategory=0,
             downsample_rate=2,
             use_hdf5=False,
@@ -68,7 +68,8 @@ if __name__ == '__main__':
     )
     trunk = models['trunk']
     embedder = models['embedder']
-    load_weights(FLAGS.weights_path, trunk, embedder, multimodal=True, device=device)
+    weights_path = os.path.join(FLAGS.weights_path, FLAGS.category)
+    load_weights(weights_path, trunk, embedder, multimodal=True, device=device)
 
     # set model to inference mode
     trunk.eval()
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     tester = Tester(
         normalize_embeddings=True,
         use_trunk_output=False,
-        batch_size=128,
+        batch_size=64,
         dataloader_num_workers=num_workers,
         pca=None,
         data_device=device,
@@ -97,8 +98,8 @@ if __name__ == '__main__':
 
     # compute training embeddings for reference set
     train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=128, num_workers=num_workers)
-    fp = os.path.join(FLAGS.weights_path, 'pascal3d_trainset_embeddings.pkl')
+        train_dataset, batch_size=64, num_workers=num_workers)
+    fp = os.path.join(weights_path, f'pascal3d_{FLAGS.category}_trainset_embeddings.pkl')
     anchors, posnegs, labels = tester.compute_all_embeddings(
         train_dataloader, trunk, embedder, split='train')
     if tester.normalize_embeddings:

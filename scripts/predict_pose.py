@@ -28,7 +28,6 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('weights_path', None, 'The path to the model weights')
 flags.DEFINE_string('image_path', None, 'The path to the query image')
 flags.DEFINE_string('refset_path', None, 'The path to the reference set embeddings')
-
 flags.mark_flags_as_required(['weights_path', 'image_path', 'refset_path'])
 
 
