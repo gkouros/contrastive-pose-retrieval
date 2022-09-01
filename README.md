@@ -85,11 +85,10 @@ In order to train on PASCAL3D you need to have followed all the aforementioned s
 Make sure the provided paths in the script are correct!!!
 
 ## Evaluation
-To evaluate a model you trained on PASCAL3D simply execute the following script after making sure the datasets and weights paths are correct:
+To evaluate a trained model simply execute the following script after adjusting the dataset and models paths and specifying the correct object category:
 ```bash
 ./scripts/evaluate_occluded_pascal3d.sh
 ```
-The evaluation script does not work with the provided trained models because it expects a log file from which it can read the configuration parameters.
 
 ## Inference on a single image
 To get an idea how to use the pose estimator take a look at the predict_pose.py script or execute it giiven paths to the image, model weights, and reference embeddings.

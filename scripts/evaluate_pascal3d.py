@@ -41,7 +41,7 @@ logger.setLevel(logging.INFO)
 
 FLAGS = flags.FLAGS
 flags.DEFINE_enum('occlusion_level', "0", ["0", "1", "2", "3"], 'The level of occlusion')
-flags.DEFINE_string('root_dir',
+flags.DEFINE_string('dataset_path',
                     '/esat/topaz/gkouros/datasets/pascal3d',
                     'The path to the dataset')
 flags.DEFINE_string('weights_path',
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     weights_path = FLAGS.weights_path
 
     # Create folder for exports
-    eval_path = f'{weights_path}/{FLAGS.experiment}/evaluation'
+    eval_path = f'{weights_path}/evaluation'
     if not os.path.exists(eval_path):
         os.makedirs(eval_path)
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         'AMI', 'NMI', 'mean_average_precision', 'mean_average_precision_at_r')
 
     """ read settings from logs """
-    logs_path = f'{weights_path}/{FLAGS.experiment}/logs'
+    logs_path = f'{weights_path}/logs'
     conf_path = logs_path + '/main.log'
     with open(conf_path, 'r') as f:
         lines = f.read()
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     """ get datasets """
     train_dataset, _, test_dataset = \
         get_pascal3d_train_val_test_datasets(
-            root_dir=FLAGS.root_dir,
+            root_dir=FLAGS.dataset_path,
             subset_ratio=subset_ratio,
             positive_type=positive_type,
             positive_from_db=False,
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     if FLAGS.positive_from_db:
         db_dataset = PASCAL3DPlusDBDataset(
-            root_dir=FLAGS.root_dir,
+            root_dir=FLAGS.dataset_path,
             object_category=object_category,
             transforms=train_dataset._transforms[1],
             positive_type=positive_type,
@@ -353,7 +353,5 @@ if __name__ == '__main__':
             duration += time.time() - start_time
 
         metrics['inference_time (ms)'] = (duration / num_iters) * 1000
-
-    metrics['run_id'] = FLAGS.experiment
 
     logging.info(json.dumps(metrics, indent=4))
