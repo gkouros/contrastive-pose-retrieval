@@ -44,10 +44,11 @@ flags.DEFINE_enum('occlusion_level', "0", ["0", "1", "2", "3"], 'The level of oc
 flags.DEFINE_string('root_dir',
                     '/esat/topaz/gkouros/datasets/pascal3d',
                     'The path to the dataset')
-flags.DEFINE_string('experiment', '', 'The trained model to evaluate')
-flags.DEFINE_string('runs_path',
-                    '/users/visics/gkouros/projects/models/pascal3d/',
-                    'The location of the dataset')
+flags.DEFINE_string('weights_path',
+                    '/esat/topaz/gkouros/models/pascal3d/trained_models',
+                    'The path to the dataset')
+flags.DEFINE_string('object_category', 'car', 'The object category to evaluate',
+                    OBJECT_CATEGORIES)
 flags.DEFINE_boolean('from_scratch', False, 'Embeddings are computed from scratch')
 flags.DEFINE_boolean('evaluate_inference_time', False, 'Estimate inference time')
 flags.DEFINE_boolean('evaluate_metrics', True,
@@ -74,10 +75,22 @@ if __name__ == '__main__':
     subset_ratio = 1.0
     positive_from_db = FLAGS.positive_from_db
     use_hdf5 = FLAGS.use_hdf5
-    runs_path = '/users/visics/gkouros/projects/models/pascal3d/'
-    weights_path = f'{FLAGS.runs_path}/{FLAGS.experiment}/saved_models'
+    backbone = torchvision.models.resnet50
+    positive_type = 'normals'
+    embedding_size = 512
+    multimodal = True
+    downsample_rate = 2
+    loss = 'weighted_contrastive'
+    distance = LpDistance()
+    batch_size = 32
+    object_category = FLAGS.object_category
+    object_subcategory = 0
+    use_fixed_cad_model = False
+    small_db = False
+    weights_path = FLAGS.weights_path
+
     # Create folder for exports
-    eval_path = f'{FLAGS.runs_path}/{FLAGS.experiment}/evaluation'
+    eval_path = f'{weights_path}/{FLAGS.experiment}/evaluation'
     if not os.path.exists(eval_path):
         os.makedirs(eval_path)
 
@@ -87,58 +100,11 @@ if __name__ == '__main__':
         'AMI', 'NMI', 'mean_average_precision', 'mean_average_precision_at_r')
 
     """ read settings from logs """
-    logs_path = f'{FLAGS.runs_path}/{FLAGS.experiment}/logs'
+    logs_path = f'{weights_path}/{FLAGS.experiment}/logs'
     conf_path = logs_path + '/main.log'
     with open(conf_path, 'r') as f:
         lines = f.read()
 
-    backbone = positive_type = embedding_size = downsample_rate = loss = \
-        multimodal = distance = object_category = object_subcategory = \
-        batch_size = use_fixed_cad_model = small_db = 0
-
-    for line in lines.split('\n'):
-        if 'positive_type' in line:
-            positive_type = line.split(':')[1][2:-2]
-        if 'embedding_size' in line:
-            embedding_size = int(line.split(':')[1][1:-1])
-        if 'downsample_rate' in line:
-            downsample_rate = int(line.split(':')[1][1:-1])
-        if 'multimodal' in line:
-            multimodal = line.split(':')[1][1:-1] in ['True', 'true']
-        if 'backbone' in line:
-            backbone_name = line.split('\':')[1][2:-2]
-            if backbone_name == 'resnet18':
-                backbone = torchvision.models.resnet18
-            else:
-                backbone = torchvision.models.resnet50
-        if 'loss' in line:
-            loss = line.split('\':')[1][2:-2]
-        if 'batch_size' in line:
-            batch_size = int(line.split(':')[1][1:-1]) * 4
-        if 'object_category' in line:
-            object_category = line.split('\':')[1][2:-2]
-        if 'object_subcategory' in line:
-            object_subcategory = int(line.split('\':')[1][1:-1])
-        if 'use_fixed_cad_model' in line:
-            use_fixed_cad_model = line.split('\':')[1][1:-1] in ['true', 'True']
-        if 'small_db' in line:
-            small_db = line.split('\':')[1][1:-1] in ['true', 'True']
-        if 'warm_start' in line:
-            break
-
-    distance = LpDistance() if loss == 'weighted_contrastive' else CosineSimilarity().to(device)
-    logging.info('Detected backbone = %s' % backbone_name)
-    logging.info('Detected positive type = %s' % positive_type)
-    logging.info('Detected embedding size = %s' % embedding_size)
-    logging.info('Detected downsample rate = %s' % downsample_rate)
-    logging.info('Detected loss = %s' % loss)
-    logging.info('Detected multimodal = %s' % multimodal)
-    logging.info('Detected distance = %s' % distance)
-    logging.info('Detected object_category = %s' % object_category)
-    logging.info('Detected object_subcategory = %s' % object_subcategory)
-    logging.info('Detected batch_size = %s' % batch_size)
-    logging.info('Detected use_fixed_cad_model = %s' % use_fixed_cad_model)
-    logging.info('Detected small_db = %s' % small_db)
 
     if int(FLAGS.occlusion_level) > 0:
         cat_suffix = f'FGL{FLAGS.occlusion_level}_BGL{FLAGS.occlusion_level}'
@@ -176,7 +142,7 @@ if __name__ == '__main__':
             device=torch.device('cpu'),
             downsample_rate=downsample_rate,
             to_bgr=FLAGS.bgr,
-            small_db=small_db,
+            small_db=False,
         )
         logging.info(f'DB dataset size: {len(db_dataset)}')
 
