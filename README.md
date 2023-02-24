@@ -105,12 +105,12 @@ python3 scripts/predict_pose.py
 Please cite the following paper if you find this the code useful for your research/projects.
 
 ```
-@misc{kouros2022poseretrieval,
-  doi = {10.48550/ARXIV.2208.06195},
-  url = {https://arxiv.org/abs/2208.06195},
-  author = {Kouros, Georgios and Shrivastava, Shubham and Picron, Cédric and Nagesh, Sushruth and Chakravarty, Punarjay and Tuytelaars, Tinne},
-  title = {Category-Level Pose Retrieval with Contrastive Features Learnt with Occlusion Augmentation},
-  publisher = {arXiv},
-  year = {2022},
+@inproceedings{Kouros_2022_BMVC,
+author    = {Georgios Kouros and Shubham Shrivastava and Cédric Picron and Sushruth Nagesh and Punarjay Chakravarty and Tinne Tuytelaars},
+title     = {Category-Level Pose Retrieval with Contrastive Features Learnt with Occlusion Augmentation},
+booktitle = {33rd British Machine Vision Conference 2022, {BMVC} 2022, London, UK, November 21-24, 2022},
+publisher = {{BMVA} Press},
+year      = {2022},
+url       = {https://bmvc2022.mpi-inf.mpg.de/0026.pdf}
 }
 ```
