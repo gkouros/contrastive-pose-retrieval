@@ -71,11 +71,10 @@ python3 scripts/visualize_pascal3d.py \
     --positive=normals
 ```
 
-## Download trained models
-You can download trained models for the all 12 PASCAL3D object categories from the following link [https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing](https://drive.google.com/drive/folders/1D5MmvqHOtYBv7YiQp8fiMcv53MMxVXb-?usp=sharing) .
+## Download trained models and encoded reference sets
+You can download trained models and encoded reference sets for all of the 12 PASCAL3D object categories
+from the following link: [https://rdr.kuleuven.be/api/access/datafile/28679](https://rdr.kuleuven.be/api/access/datafile/28679)
 
-## Download encoded reference sets
-You can download encoded reference sets for all 12 PASCAL3D object categories from the following link  [https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing](https://drive.google.com/drive/folders/1BsYb6ttNwYRgT72z10ItZ-Vayj9jVios?usp=sharing) .
 
 ## Training
 In order to train on PASCAL3D you need to have followed all the aforementioned steps to download and preprocess PASCAL3D to generate the training and testing sets. Then simply execute the following script:
